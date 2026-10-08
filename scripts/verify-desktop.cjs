@@ -1,0 +1,1 @@
+const {execFileSync}=require('node:child_process');for(const script of ['scripts/smoke.cjs','scripts/audio-smoke.cjs','scripts/transitions-smoke.cjs','scripts/editing-smoke.cjs','scripts/timeline-smoke.cjs','scripts/stacking-smoke.cjs','scripts/gif-smoke.cjs'])execFileSync(process.execPath,[script,...process.argv.slice(2)],{stdio:'inherit',windowsHide:true});

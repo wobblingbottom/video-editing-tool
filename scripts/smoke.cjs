@@ -1,0 +1,27 @@
+const {_electron}=require('playwright');const assert=require('node:assert/strict');const fs=require('node:fs/promises');const path=require('node:path');const {execFileSync}=require('node:child_process');
+(async()=>{const root=path.resolve(__dirname,'..'),qa=path.join(root,'.qa');await fs.mkdir(qa,{recursive:true});let electron;
+try{
+electron=await _electron.launch({executablePath:process.argv[2]||require('electron'),args:process.argv[2]?[]:[root],env:{...process.env,ELECTRON_RUN_AS_NODE:undefined},timeout:60000});
+const page=await electron.firstWindow();const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.waitForSelector('#preview-import');await page.screenshot({path:path.join(qa,'empty.png')});
+const source=path.join(root,'.test-output/source.mp4'),audio=path.join(root,'.test-output/music.wav'),projectFile=path.join(qa,'editing.cutline'),output=path.join(qa,'ui-export.mp4');
+await electron.evaluate(({dialog},d)=>{dialog.showOpenDialog=async(_w,opts)=>({canceled:false,filePaths:opts.title==='Open project'?[d.projectFile]:[d.source,d.audio]});dialog.showSaveDialog=async(_w,opts)=>({canceled:false,filePath:opts.title==='Export video'?d.output:d.projectFile});},{source,audio,projectFile,output});
+await page.click('#import-button');await page.waitForSelector('.media-card');assert.equal(await page.locator('.media-card').count(),2);
+await page.uncheck('#magnetic-toggle');await page.locator('[data-add]').first().click();await page.waitForSelector('.timeline-clip.video');assert.equal(await page.locator('.timeline-clip.video').count(),1);
+const edge=await page.locator('.timeline-clip.video .clip-handle.right').boundingBox();await page.mouse.move(edge.x+3,edge.y+20);await page.mouse.down();await page.mouse.move(edge.x-17,edge.y+20,{steps:6});await page.mouse.up();assert.ok(Math.abs(await page.evaluate(()=>C.clipDuration(selection()))-2.5)<.05);const clipRect=await page.locator('.timeline-clip.video').boundingBox();await page.mouse.move(clipRect.x+25,clipRect.y+25);await page.mouse.down();await page.mouse.move(clipRect.x+45,clipRect.y+25,{steps:6});await page.mouse.up();assert.ok(Math.abs(await page.evaluate(()=>selection().start)-.5)<.05);
+await page.click('#play-button');await page.waitForFunction(()=>document.querySelector('#current-time').textContent!=='00:00:00:00');await page.click('#play-button');
+await page.evaluate(()=>seek(1));await page.click('#split');assert.equal(await page.locator('.timeline-clip.video').count(),2);
+await page.click('#undo');assert.equal(await page.locator('.timeline-clip.video').count(),1);await page.click('#redo');assert.equal(await page.locator('.timeline-clip.video').count(),2);
+await page.click('#add-text');await page.fill('textarea[data-prop="text"]','Made in Cutline');assert.equal(await page.locator('.timeline-clip.text').count(),1);
+await page.locator('[data-add]').nth(1).click();assert.equal(await page.locator('.timeline-clip.audio').count(),1);
+await page.selectOption('#aspect-ratio','9:16');assert.equal(await page.locator('#preview-canvas').getAttribute('width'),'608');await page.selectOption('#aspect-ratio','16:9');
+await page.click('#save-project');await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='Saved');const saved=JSON.parse(await fs.readFile(projectFile,'utf8'));assert.equal(saved.clips.length,4);assert.equal(saved.assets.length,2);
+await page.click('#open-project');await page.waitForFunction(()=>document.querySelector('#toast').textContent==='Project opened.');
+await page.locator('.timeline-clip.video').first().click();await page.click('[data-inspector="color"]');await page.evaluate(()=>{const el=document.querySelector('[data-prop="saturation"]');el.value='0';el.dispatchEvent(new Event('input',{bubbles:true}));});await page.evaluate(()=>seek(.5));await page.waitForFunction(()=>Array.from(media.values()).some(el=>el.tagName==='VIDEO'&&el.readyState>=2));await page.screenshot({path:path.join(qa,'editing.png')});
+await page.click('#export-button');await page.selectOption('#export-resolution','720');await page.click('#start-export');await page.waitForFunction(()=>document.querySelector('#export-message').textContent.startsWith('Saved to '),{},{timeout:60000});
+const meta=JSON.parse(execFileSync(require('ffprobe-static').path,['-v','error','-show_format','-show_streams','-of','json',output],{encoding:'utf8',windowsHide:true}));assert.ok(meta.streams.some(s=>s.codec_type==='video'));assert.ok(meta.streams.some(s=>s.codec_type==='audio'));assert.equal(errors.length,0,errors.join('\n'));
+await page.click('#export-cancel');
+await page.click('#new-project');if(await page.locator('#confirm-dialog[open]').count())await page.click('#discard-edits');await page.waitForFunction(()=>document.querySelectorAll('.timeline-clip').length===0);
+await page.click('#add-text');await page.click('#save-project');await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='Saved');
+console.log('PASS: native import, edge trimming, clip movement, playback, split, undo/redo, text, audio, aspect ratio, project save/open, color adjustments, MP4 export, and new-project reset.');console.log('Screenshots: '+qa);console.log('WebMCP supported: '+await page.evaluate(()=>!!document.modelContext));
+}finally{if(electron)await electron.evaluate(({app})=>app.exit(0)).catch(()=>{});}
+})().catch(e=>{console.error(e);process.exitCode=1;});
