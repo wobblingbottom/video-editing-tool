@@ -1,4 +1,4 @@
-# Cutline Studio
+# Crazyland Motion
 
 A free Windows desktop video editor inspired by CapCut's editing workflow, with its own interface and a coral `#f45f77` accent. Projects and media stay on your computer. The implemented tools have no account requirement, subscription, or export watermark.
 
@@ -21,7 +21,7 @@ Dependencies download Electron, FFmpeg, and FFprobe during installation. Normal 
 npm run build:win
 ```
 
-Open `release/Cutline-Studio-1.6.1.exe`. The portable app bundles its runtime and media tools; Node.js is only needed to develop or build it. The executable is unsigned.
+Open `release/Crazyland-Motion-1.6.2.exe`. The portable app bundles its runtime and media tools; Node.js is only needed to develop or build it. The executable is unsigned.
 
 ## Editing tools
 
@@ -58,7 +58,7 @@ Export settings do not change the project's frame rate. Progress and cancellatio
 
 ## Projects and shortcuts
 
-Save with **Ctrl S** and reopen `.cutline` files with **Ctrl O**. Projects reference the original media paths; keep source files available. Layer order, groups, layouts, track states, text styling, keyframes, transitions, and timeline settings are preserved. Older version 1 projects remain supported.
+Save with **Ctrl S** and reopen `.cutline` files with **Ctrl O**. Projects reference the original media paths; keep source files available. Layer order, groups, layouts, track states, text styling, keyframes, transitions, and timeline settings are preserved. Existing `.cutline` projects remain compatible; the file extension stays the same after the rename.
 
 | Shortcut | Action |
 | --- | --- |
@@ -89,7 +89,7 @@ npm run test:desktop
 To verify a built app:
 
 ```powershell
-node scripts/verify-desktop.cjs "release/win-unpacked/Cutline Studio.exe"
+node scripts/verify-desktop.cjs "release/win-unpacked/Crazyland Motion.exe"
 ```
 
 Tests cover actual FFmpeg exports, animation timing, color blending, audio mixing, cancellation, project persistence, and desktop editing workflows. Generated media, screenshots, build outputs, and local project files are excluded from Git.

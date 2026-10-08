@@ -1,6 +1,6 @@
 # CapCut-style feature roadmap
 
-Cutline Studio is a Windows desktop editor. Features are being added in working stages, with preview behavior, project persistence, timeline indicators, and real exports checked together.
+Crazyland Motion is a Windows desktop editor. Features are being added in working stages, with preview behavior, project persistence, timeline indicators, and real exports checked together.
 
 Reference: [CapCut Desktop feature overview](https://www.capcut.com/tools/desktop-video-editor). This is a working implementation checklist, not a guarantee that every CapCut feature, preset, service, or platform-specific option has been inventoried. CapCut changes its catalog over time.
 

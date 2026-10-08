@@ -1,7 +1,7 @@
 {
-  "name": "cutline-studio",
-  "version": "1.6.1",
-  "description": "A local-first Windows video editor",
+  "name": "crazyland-motion",
+  "version": "1.6.2",
+  "description": "Crazyland Motion \u2014 a local-first Windows video editor",
   "main": "electron/main.cjs",
   "author": "Crazyland",
   "license": "MIT",
@@ -23,7 +23,7 @@
   },
   "build": {
     "appId": "com.crazyland.cutline",
-    "productName": "Cutline Studio",
+    "productName": "Crazyland Motion",
     "directories": {
       "output": "release"
     },
@@ -44,11 +44,11 @@
       "target": [
         "portable"
       ],
-      "signAndEditExecutable": false,
+      "signExecutable": false,
       "icon": "src/assets/icon.ico"
     },
     "portable": {
-      "artifactName": "Cutline-Studio-${version}.exe"
+      "artifactName": "Crazyland-Motion-${version}.exe"
     }
   },
   "engines": {

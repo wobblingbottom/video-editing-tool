@@ -11,7 +11,7 @@ const edge=await page.locator('.timeline-clip.video .clip-handle.right').boundin
 await page.click('#play-button');await page.waitForFunction(()=>document.querySelector('#current-time').textContent!=='00:00:00:00');await page.click('#play-button');
 await page.evaluate(()=>seek(1));await page.click('#split');assert.equal(await page.locator('.timeline-clip.video').count(),2);
 await page.click('#undo');assert.equal(await page.locator('.timeline-clip.video').count(),1);await page.click('#redo');assert.equal(await page.locator('.timeline-clip.video').count(),2);
-await page.click('#add-text');await page.fill('textarea[data-prop="text"]','Made in Cutline');assert.equal(await page.locator('.timeline-clip.text').count(),1);
+await page.click('#add-text');await page.fill('textarea[data-prop="text"]','Made in Crazyland Motion');assert.equal(await page.locator('.timeline-clip.text').count(),1);
 await page.locator('[data-add]').nth(1).click();assert.equal(await page.locator('.timeline-clip.audio').count(),1);
 await page.selectOption('#aspect-ratio','9:16');assert.equal(await page.locator('#preview-canvas').getAttribute('width'),'608');await page.selectOption('#aspect-ratio','16:9');
 await page.click('#save-project');await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='Saved');const saved=JSON.parse(await fs.readFile(projectFile,'utf8'));assert.equal(saved.clips.length,4);assert.equal(saved.assets.length,2);
